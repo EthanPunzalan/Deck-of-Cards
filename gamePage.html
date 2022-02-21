@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+</head>
+<body id="body">
+    <div id="board">
+        <h1>Your Cards:</h1>
+        <img id="card0" src="" alt="">
+        <img id="card1" src="" alt="">
+    </div>
+    <div id="btnContainer">
+        <button id="hitBtn">Hit</button>
+        <button id="stayBtn">Stay</button>
+        <button id="resetBtn">Reset</button>
+    </div>
+    <div id="boardDealer">
+        <h1>Dealer's Cards:</h1>
+        <img id="card2" src="" alt="">
+        <img id="card3" src="" alt="">
+    </div>
+    <script>
+    let API_KEY;
+    const player = {score:"0"};
+    const dealer = {score:"0"};
+
+    function start(){
+        fetch("https://deckofcardsapi.com/api/deck/279z9v6qem0s/shuffle/?deck_count=1")
+        .then(data => data.json())
+        .then(data => {
+            console.log(data)
+            API_KEY = data.deck_id;  
+
+            function deal(){
+                fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=4`)
+                .then(data => data.json())
+                .then(card => {
+                    console.log(card)
+                    let cards = card.cards;
+                    
+                    for(var i = 0; i < cards.length; i++){
+                        console.log(cards[i].code)
+                        document.getElementById("card"+i).src= cards[i].image;
+                        document.getElementById("card3").src= "img/back.png";
+                    }
+
+                    for(var i = 0; i < cards.length; i++){
+                        console.log(cards[i].value)
+                        if(cards[i].value == "ACE"){
+                            cards[i].value = 1;
+                            console.log(cards[i].value)
+                        }
+                        if(cards[i].value == "JACK"){
+                            cards[i].value = 10;
+                            console.log(cards[i].value)
+                        }
+                        if(cards[i].value == "QUEEN"){
+                            cards[i].value = 10;
+                            console.log(cards[i].value)
+                        }
+                        if(cards[i].value == "KING"){
+                            cards[i].value = 10;
+                            console.log(cards[i].value)
+                        }
+                    }
+                    
+                    player.score = parseInt(cards[0].value) + parseInt(cards[1].value)
+
+                    // if(value0  value1 == "JACK"){
+                    //     console.log("check")
+                    // }
+                
+                    console.log(player.score);
+                    
+                })
+            }
+            deal();
+        });
+    }
+
+    function hit(){
+        fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=1`)
+            .then(data => data.json())
+            .then(card => {
+                console.log(card)
+                let cards = card.cards;
+                let cardhit = cards[0];
+                console.log(cardhit.image)
+                if(cards[0].value == "ACE"){
+                    cards[0].value = 1;
+                    console.log(cards[0].value)
+                }
+                if(cards[0].value == "JACK"){
+                    cards[0].value = 10;
+                    console.log(cards[0].value)
+                }
+                if(cards[0].value == "QUEEN"){
+                    cards[0].value = 10;
+                    console.log(cards[0].value)
+                }
+                if(cards[0].value == "KING"){
+                    cards[0].value = 10;
+                    console.log(cards[0].value)
+                }
+                var i = 0;
+                var img = document.createElement('img');
+                img.id =`cardhit${i}`;
+                img.src = cardhit.image;
+                document.getElementById('board').appendChild(img);
+                i++;
+
+               
+
+                player.score = player.score + parseInt(cards[0].value);
+
+                console.log(player.score)
+
+                if(player.score > 21){
+                    setTimeout(function() { 
+                        if(!alert('You Busted')){window.location.reload();} 
+                    }, 500); 
+                }
+
+                if(player.score == 21){
+                    setTimeout(function() { alert("Black Jack!"); }, 500);
+                    
+                }
+            })
+    }
+
+    function reset(){
+        window.location.reload();
+    }
+
+    function stay(){
+
+    }
+    
+    const hitBtn = document.getElementById("hitBtn");
+    hitBtn.addEventListener("click",hit);
+
+    const resetBtn = document.getElementById("resetBtn");
+    resetBtn.addEventListener("click",reset);
+
+    start();
+    </script>
+</body>
+</html>

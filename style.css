@@ -1,0 +1,52 @@
+body{
+    height: 100vh;
+    width: 100vw;
+    background-color: rgb(24, 59, 16);
+    overflow-x: hidden;
+    /* background-image: url(img/bg.jpg);
+    background-repeat: no-repeat;
+    background-size: cover; */
+}
+h1{
+    color: white;
+}
+
+#board{
+    margin: auto;
+    text-align: center;
+    background-color: brown;
+    width: 60%;
+    background-image: url(img/deckBG.jpg);
+    border-radius: 10px;
+    border: 5px solid black;
+}
+
+#boardDealer{
+    margin: auto;
+    text-align: center;
+    background-color: brown;
+    width: 60%;
+    background-image: url(img/deckBG.jpg);
+    border-radius: 10px;
+    border: 5px solid black;
+}
+
+#btnContainer{
+    text-align: center;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
+
+#btnContainer > button{
+    width: 10%;
+    background-color: rgb(77, 73, 73);
+    color: white;
+    font-size: 30px;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+}
+
+#btnContainer > button:hover{
+    color: aqua;
+}
