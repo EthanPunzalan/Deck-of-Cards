@@ -4,12 +4,78 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index_styles.css">
     <title>Document</title>
 </head>
-<body style="overflow: hidden;">
-    <div style="text-align: center;">
-        <h1 style="text-align: center; position: relative; top: 20%;">Welcome!</h1>
-        <a href="gamePage.html" style="font-size: 200%;">Start</a>
+<body>
+    <img class="cardsImg1" src="/img/playing-cards.png" alt="">
+    <img class="cardsImg2" src="/img/playing-cards.png" alt="">
+    <div class="container">
+        <h1>Welcome to Black Jack! </h1>
+        <button class="btn btn1" onclick="location.href='gamePage.html'">Start</button>
+        <button data-popup-target="#popup" class="btn btn2">How to play</button>
     </div>
+    
+    <div class="popup" id="popup">
+        <div class="popupHeader">
+            <div class="title">How to Play</div>
+            <div data-close-button class="closeBtn">&times;</div>
+        </div>
+        <div class="popupBody">
+            Aim of Black Jack is to get 21 or as close to as possible. 
+            Number cards have their face value, jacks, kings and queens are worth 10, Ace is worth 1. <br><br>
+            If you get 21, it means you Black Jack and win the game, however if you go over 21, you will bust meaning the dealer wins<br><br>
+            You have two options, either to HIT or STAY. <br>HIT if you're confident enough to not bust and go over 21. <br>STAY if you think you
+            are high enough to gamble if the dealer will be lower than you or bust. However if the dealer gets 21, the dealer wins.
+        </div>
+    </div>
+    <div id="overlay"></div>
+
+    <!-- Javascript for "How to play" popup -->
+    <script>
+        //Declaring variables
+        const openPopupButton = document.querySelectorAll('[data-popup-target]')
+        const closePopupButton = document.querySelectorAll('[data-close-button]')
+        const overlay = document.getElementById('overlay')
+
+        //An event listener to open the popup on click on the "How to play" button
+        openPopupButton.forEach(button => {
+            button.addEventListener('click',()=>{
+                const popup = document.querySelector(button.dataset.popupTarget)
+                openPopup(popup)
+            })
+        })
+
+        //An event listener to close the popup on click outside the popup
+        overlay.addEventListener('click',()=>{
+            const popups =document.querySelectorAll('.popup.active')
+            popups.forEach(popup =>{
+                closePopup(popup)
+            })
+        })
+
+        //An event listener to close the popup when clicking the "X"
+        closePopupButton.forEach(button => {
+            button.addEventListener('click',()=>{
+                const popup = button.closest('.popup')
+                closePopup(popup)
+            })
+        })
+
+        //The function being called when "How to play" button is clicked
+        function openPopup(popup){
+            if(popup == null) return
+            popup.classList.add('active')
+            overlay.classList.add('active')
+        }
+
+        //The function being called to close the popup
+        function closePopup(popup){
+            if(popup == null) return
+            popup.classList.remove('active')
+            overlay.classList.remove('active')
+        }
+    </script>
 </body>
 </html>
+

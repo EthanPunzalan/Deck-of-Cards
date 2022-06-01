@@ -4,50 +4,84 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    
+<link rel="stylesheet" href="style.css">
     <title>Document</title>
 </head>
 <body id="body">
-    <div id="board">
-        <h1>Your Cards:</h1>
-        <img id="card0" src="" alt="">
-        <img id="card1" src="" alt="">
+
+    <button class="btn backBtn" onclick="location.href='index.html'">Back</button>
+    <button data-popup-target="#popup" class="btn helpBtn">How to play</button>
+    <div class="popup" id="popup">
+        <div class="popupHeader">
+            <div class="title">How to Play</div>
+            <div data-close-button class="closeBtn">&times;</div>
+        </div>
+        <div class="popupBody">
+            Aim of Black Jack is to get 21 or as close to as possible. 
+            Number cards have their face value, jacks, kings and queens are worth 10, Ace is worth 1. <br><br>
+            If you get 21, it means you Black Jack and win the game, however if you go over 21, you will bust meaning the dealer wins<br><br>
+            You have two options, either to HIT or STAY. <br>HIT if you're confident enough to not bust and go over 21. <br>STAY if you think you
+            are high enough to gamble if the dealer will be lower than you or bust. However if the dealer gets 21, the dealer wins.
+        </div>
+    </div>
+    <div id="overlay"></div>
+    <div id="boardDealer">
+        <h1>Dealer's Cards:</h1><h1 id="dealerScore"></h1>
+        <img id="card2" src="" alt="">
+        <img id="cardDown" src="" alt="">
     </div>
     <div id="btnContainer">
-        <button id="hitBtn">Hit</button>
-        <button id="stayBtn">Stay</button>
-        <button id="resetBtn">Reset</button>
+        <button class="btn" id="hitBtn">Hit</button>
+        <button class="btn" id="stayBtn">Stay</button>
+        <button class="btn" id="resetBtn">Reset</button>
     </div>
-    <div id="boardDealer">
-        <h1>Dealer's Cards:</h1>
-        <img id="card2" src="" alt="">
-        <img id="card3" src="" alt="">
+    <div id="board">
+        <h1>Your Cards:</h1><h1 id="score"></h1>
+        <img id="card0" src="" alt="">
+        <img id="card1" src="" alt="">
+       
     </div>
+    <audio src="/audio/shuffle.mp3" id="my_audio" autoplay="autoplay"></audio>
+
+    <!-- Main javascript for the game function -->
     <script>
+        //Added a sound effect of shuffling on window load
+        window.onload=function(){
+        document.getElementById("my_audio").play();
+    }
+
     let API_KEY;
+    //Declaring the player and dealer to have a scoring
     const player = {score:"0"};
     const dealer = {score:"0"};
 
+    //A function that contains the shuffling and drawing of cards on load
     function start(){
-        fetch("https://deckofcardsapi.com/api/deck/279z9v6qem0s/shuffle/?deck_count=1")
+        //fetching the api to generate a deck
+        fetch("https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1")
         .then(data => data.json())
         .then(data => {
             console.log(data)
             API_KEY = data.deck_id;  
 
+            //function for drawing the initial cards
             function deal(){
-                fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=4`)
+                fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=3`)
                 .then(data => data.json())
                 .then(card => {
                     console.log(card)
                     let cards = card.cards;
                     
+                    //Looping through the deck to display the cards
                     for(var i = 0; i < cards.length; i++){
                         console.log(cards[i].code)
                         document.getElementById("card"+i).src= cards[i].image;
-                        document.getElementById("card3").src= "img/back.png";
+                        //Adds a placeholder image that shows the back of the card on the dealers board
+                        document.getElementById("cardDown").src= "img/back.png";
                     }
 
+                    //Converting the cards that dont have a numerical value
                     for(var i = 0; i < cards.length; i++){
                         console.log(cards[i].value)
                         if(cards[i].value == "ACE"){
@@ -68,21 +102,24 @@
                         }
                     }
                     
-                    player.score = parseInt(cards[0].value) + parseInt(cards[1].value)
-
-                    // if(value0  value1 == "JACK"){
-                    //     console.log("check")
-                    // }
+                    //setting up the total of cards the player and dealer has
+                    player.score = parseInt(cards[0].value) + parseInt(cards[1].value);
+                    dealer.score = parseInt(cards[2].value);
                 
-                    console.log(player.score);
+                    console.log(dealer.score);
+
+                    document.getElementById('score').innerHTML = player.score;
                     
                 })
             }
+            //Calling deal function
             deal();
         });
     }
 
+    //A hit function for the button HIT
     function hit(){
+        //Fetching a single card from the api under the same API KEY
         fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=1`)
             .then(data => data.json())
             .then(card => {
@@ -90,6 +127,8 @@
                 let cards = card.cards;
                 let cardhit = cards[0];
                 console.log(cardhit.image)
+
+                //Converting the cards that dont have a numerical value
                 if(cards[0].value == "ACE"){
                     cards[0].value = 1;
                     console.log(cards[0].value)
@@ -106,47 +145,218 @@
                     cards[0].value = 10;
                     console.log(cards[0].value)
                 }
-                var i = 0;
+
+                //This block inserts the card that was fetched into the board of the player
                 var img = document.createElement('img');
-                img.id =`cardhit${i}`;
+                img.id =`cardhit`;
                 img.src = cardhit.image;
                 document.getElementById('board').appendChild(img);
-                i++;
 
-               
-
+                //Calculates the score after the hit
                 player.score = player.score + parseInt(cards[0].value);
 
                 console.log(player.score)
 
+                //Checks if the player will bust(>21=lose) or get a black jack(=21=win)
                 if(player.score > 21){
-                    setTimeout(function() { 
-                        if(!alert('You Busted')){window.location.reload();} 
-                    }, 500); 
+
+                    setTimeout(function() {
+                        var popupImg = document.createElement('img');
+                        popupImg.id =`popupImg`;
+                        popupImg.src = 'img/Bust.png';
+                        //Displays a "Bust" image
+                        document.getElementById('body').appendChild(popupImg);
+                    }, 1500);
+                    
                 }
 
                 if(player.score == 21){
-                    setTimeout(function() { alert("Black Jack!"); }, 500);
+                    setTimeout(function() {
+                        var popupImg = document.createElement('img');
+                        popupImg.id =`popupImg`;
+                        popupImg.src = 'img/BJ.png';
+                        //Displays a "Black Jack" image
+                        document.getElementById('body').appendChild(popupImg);
+                    }, 1500);
                     
                 }
+
+                //Displays the current score the player has
+                document.getElementById('score').innerHTML = player.score;
+
             })
     }
 
+    //A reset function for the button RESET
     function reset(){
+        //resets the window to start a new game
         window.location.reload();
     }
 
+    //A fucntion for the button STAY
     function stay(){
+         let i = 0;
+         //Removing the placeholder of an image that shows the back of a card
+        document.getElementById("cardDown").src= " ";
+        
+                 fetch(`https://deckofcardsapi.com/api/deck/${API_KEY}/draw/?count=7`)
+                .then(data => data.json())
+                .then(card => {
 
+                    //A while loop to see if the dealer has less than or equal to 16 points
+                    while(dealer.score <= 16){
+                   
+                    //Storing the fetched cards on variables    
+                    let cards = card.cards;
+                    let cardhit = cards[i];
+                   
+                    //Converting the cards that dont have a numerical value
+                    if(cards[i].value == "ACE"){
+                        cards[i].value = 1;                  
+                    }
+                    if(cards[i].value == "JACK"){
+                        cards[i].value = 10;                   
+                    }
+                    if(cards[i].value == "QUEEN"){
+                        cards[i].value = 10;                      
+                    }
+                    if(cards[i].value == "KING"){
+                        cards[i].value = 10;
+                    }
+                    //This block inserts the card that was fetched into the board of the dealer
+                    var img = document.createElement('img');
+                    img.id =`cardhit`;
+                    img.src = cardhit.image;
+                    document.getElementById('boardDealer').appendChild(img);
+                    
+                    //Calculates the score of the dealer every time a card is added
+                    dealer.score = dealer.score + parseInt(cards[i].value);
+                    i++;
+
+                    //Displays the dealer's score
+                    document.getElementById('dealerScore').innerHTML = dealer.score;
+
+                    //Checks if the dealer's score isd greater than or equal to 17 which enters into multiple if else statements
+                    if(dealer.score >= 17){
+                    console.log(dealer.score);
+
+                        //Checks if dealer's score is greater than 21 which means "Bust"
+                        if(dealer.score > 21 ){
+                            setTimeout(function() {
+                            var popupImg = document.createElement('img');
+                            popupImg.id =`popupImg`;
+                            popupImg.src = 'img/DealerBust.png';
+                            document.getElementById('body').appendChild(popupImg);
+                        }, 1500);
+                        }
+
+                        //Checks if dealer's score is equal to 21 and not equal to the player's score 
+                        else if(dealer.score == 21 && dealer.score != player.score){
+                            setTimeout(function() {
+                            var popupImg = document.createElement('img');
+                            popupImg.id =`popupImg`;
+                            popupImg.src = 'img/DealerWins.png';
+                            document.getElementById('body').appendChild(popupImg);
+                        }, 1500);
+                        }
+
+                        //Checks if the dealer's score is equal to the player's score
+                        else if(dealer.score == player.score){
+                            setTimeout(function() {
+                            var popupImg = document.createElement('img');
+                            popupImg.id =`popupImg`;
+                            popupImg.src = 'img/Draw.png';
+                            document.getElementById('body').appendChild(popupImg);
+                        }, 1500);
+                        }
+
+                        //Checks if the dealer's score is not equal to 21 and is greater than the player's score
+                        else if(dealer.score != 21 && dealer.score > player.score){
+                            setTimeout(function() {
+                            var popupImg = document.createElement('img');
+                            popupImg.id =`popupImg`;
+                            popupImg.src = 'img/DealerWins.png';
+                            document.getElementById('body').appendChild(popupImg);
+                        }, 1500);
+                        }
+
+                        //Checks if the dealer's score is less than the player's score
+                        else if(dealer.score < player.score){
+                            setTimeout(function() {
+                            var popupImg = document.createElement('img');
+                            popupImg.id =`popupImg`;
+                            popupImg.src = 'img/YouWin.png';
+                            document.getElementById('body').appendChild(popupImg);
+                        }, 1500);
+                    }
+                }
+            }
+                
+        })     
+     
     }
-    
+ 
+    //An event listener fot the HIT button
     const hitBtn = document.getElementById("hitBtn");
     hitBtn.addEventListener("click",hit);
 
+    //An event listener fot the STAY button
+    const stayBtn = document.getElementById("stayBtn");
+    stayBtn.addEventListener("click",stay);
+
+    //An event listener fot the RESET button
     const resetBtn = document.getElementById("resetBtn");
     resetBtn.addEventListener("click",reset);
 
+    //Calling start function to run when the window loads.
     start();
     </script>
+
+<!-- Javascript for "How to play" popup -->
+<script>
+    //Declaring variables
+    const openPopupButton = document.querySelectorAll('[data-popup-target]')
+    const closePopupButton = document.querySelectorAll('[data-close-button]')
+    const overlay = document.getElementById('overlay')
+
+    //An event listener to open the popup on click on the "How to play" button
+    openPopupButton.forEach(button => {
+        button.addEventListener('click',()=>{
+            const popup = document.querySelector(button.dataset.popupTarget)
+            openPopup(popup)
+        })
+    })
+
+    //An event listener to close the popup on click outside the popup
+    overlay.addEventListener('click',()=>{
+        const popups =document.querySelectorAll('.popup.active')
+        popups.forEach(popup =>{
+            closePopup(popup)
+        })
+    })
+
+    //An event listener to close the popup when clicking the "X"
+    closePopupButton.forEach(button => {
+        button.addEventListener('click',()=>{
+            const popup = button.closest('.popup')
+            closePopup(popup)
+        })
+    })
+
+    //The function being called when "How to play" button is clicked
+    function openPopup(popup){
+        if(popup == null) return
+        popup.classList.add('active')
+        overlay.classList.add('active')
+    }
+
+    //The function being called to close the popup
+    function closePopup(popup){
+        if(popup == null) return
+        popup.classList.remove('active')
+        overlay.classList.remove('active')
+    }
+</script>
+   
 </body>
 </html>

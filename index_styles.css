@@ -4,83 +4,103 @@
 }
 
 body{
+    background-image: linear-gradient(to right,#35654d, #4dbe86);
     font-family: OdibeeSans;
-    height: 100vh;
-    width: 100vw;
-    background-color: #35654d;
-    overflow-x: hidden;
 }
-h1{
+
+.container{
+    text-align: center;
+    background-image: url(img/deckBG.jpg);
+    width: 30%;
+    height: 250px;
+    transform: translate(110%,80%);
+    border: 4px solid gold;
+    border-radius: 10px;
     color: white;
 }
 
-#board{
-    margin: auto;
-    text-align: center;
-    background-color: brown;
-    width: 60%;
-    height: auto;
-    background-image: url(img/deckBG.jpg);
-    border-radius: 10px;
-    border: 3px solid gold;
-}
-
-#boardDealer{
-    margin: auto;
-    text-align: center;
-    background-color: brown;
-    width: 60%;
-    height: auto;
-    background-image: url(img/deckBG.jpg);
-    border-radius: 10px;
-    border: 3px solid gold;
-}
-
-#btnContainer{
-    text-align: center;
-    margin-top: 1%;
-    margin-bottom: 1%;
+h1{
+    font-size: 3em;
 }
 
 .btn{
-    width: 10%;
+    width: 30%;
     background-color: rgb(77, 73, 73);
     color: white;
-    font-size: 2em;
+    font-size: 3em;
     text-decoration: none;
     border: none;
     border-radius: 5px;
     margin: 0 1% 0% 1%;
     font-family: OdibeeSans;
+    transform: translateY(90%);
+    animation: btnGlow ease-in-out 2s infinite alternate;
+    cursor: pointer;
+}
+
+.btn1{
+    position: relative;
+    left: 10%;
+}
+
+.btn2{
+    position: relative;
+    width: 20%;
+    font-size: 1.3em;
+    left: 20%;
+    top: 13%;
+}
+
+@keyframes btnGlow {
+    from {text-shadow: 0 0 20px #fff, 0 0 30px #fff ;}
+    to {text-shadow: 0 0 0px #fff, 0 0 0px #fff ;}
 }
 
 
-.btn:hover{
+
+/* .btn:hover{
     color: white;
     text-shadow: 0 0 20px #fff, 0 0 30px #fff ;
-}
+} */
 
-.backBtn{
-    position: absolute   
-}
-
-.helpBtn{
+.cardsImg1{
     position: absolute;
-    top: 8%;
+    width: 10%;
+    left: 27.5%;
+    top: 16%;
+    transform: rotate(-30deg);
+    animation: anim2 ease 2s infinite alternate;
 }
 
-#popupImg{
-    height: 50%;
+.cardsImg2{
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%,-110%);
+    width: 10%;
+    left: 60%;
+    top: 16%;
+    transform: rotate(30deg);
+    animation: anim ease 2s infinite alternate;
+}
+
+@keyframes anim{
+    0%   {transform: rotate(30deg);}
+  25%  {transform: rotate(20deg);}
+  50%  {transform: rotate(10deg);}
+  75%  {transform: rotate(20deg);}
+  100% {transform: rotate(30deg);;}
+}
+
+@keyframes anim2{
+    0%   {transform: rotate(-30deg);}
+  25%  {transform: rotate(-20deg);}
+  50%  {transform: rotate(-10deg);}
+  75%  {transform: rotate(-20deg);}
+  100% {transform: rotate(-30deg);;}
 }
 
 .popup{
     position: fixed;
     top: 20%;
-    left: 40%;
+    left: 35.7%;
     transform: scale(0);
     border: 1px solid black;
     border-radius: 10px;
